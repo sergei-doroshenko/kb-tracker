@@ -9,7 +9,7 @@ docs, and infrastructure are in English.
 
 ## 1. Prerequisites
 
-- Node.js ≥ 20 (LTS): https://nodejs.org
+- Node.js ≥ 22 (LTS): https://nodejs.org
 - npm ≥ 10 (ships with Node)
 - AWS CLI v2 (for one-time infrastructure setup): https://docs.aws.amazon.com/cli/
 - GitHub and AWS accounts
@@ -175,7 +175,7 @@ Creating a `production` environment is recommended (Settings → Environments) �
 ## 6. CI/CD: how the deploy works
 
 File: `.github/workflows/deploy.yml`. 
-Push to main → checkout → Node 20 with npm cache → `npm ci` → `npm run build` →
+Push to main → checkout → Node 22 with npm cache → `npm ci` → `npm run build` →
 OIDC auth to AWS → upload to S3 → CloudFront invalidation.
 
 Caching strategy (key to instant updates):
