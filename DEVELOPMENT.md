@@ -128,12 +128,20 @@ Role `kb-tracker-deploy` with this trust policy (replace <ACCOUNT_ID> and <you>/
     "Action": "sts:AssumeRoleWithWebIdentity",
     "Condition": {
       "StringEquals": { "token.actions.githubusercontent.com:aud": "sts.amazonaws.com" },
-      "StringLike":   { "token.actions.githubusercontent.com:sub": "repo:<you>/kb-tracker:ref:refs/heads/main" }
+      "StringLike": {
+        "token.actions.githubusercontent.com:sub": [
+          "repo:<you>/kb-tracker:ref:refs/heads/main",
+          "repo:<you>/kb-tracker:environment:production"
+        ]
+      }
     }
   }]
 }
 ```
-The `sub` condition pins the role strictly to the main branch of your repository.
+The `sub` condition pins the role to the main branch and the `production`
+environment of your repository. Both are needed: GitHub uses the `ref:` format
+for plain `push` triggers and the `environment:` format when the workflow
+specifies `environment: production`.
 Docs: https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
 
 Permissions policy for the role (minimal):
