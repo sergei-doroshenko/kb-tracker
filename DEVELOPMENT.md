@@ -94,14 +94,20 @@ serves it to the outside world.
 
 ### 5.2 CloudFront
 
-AWS Console → CloudFront → Create distribution:
-- Origin: the kb-tracker-prod bucket, Origin access: **Origin Access Control**
-  (create an OAC); CloudFront will offer a bucket policy — apply it.
-- Default root object: `index.html`.
-- Viewer protocol policy: Redirect HTTP to HTTPS.
+AWS Console → CloudFront → **Create distribution**:
+
+1. **Origin access**: choose **Origin access control settings (recommended)** →
+   click **Create new OAC** → leave defaults (Sign requests, S3 origin type) → Create.
+2. Leave Origin path blank (files are at the bucket root).
+3. Under Origin settings and Cache settings, choose the "Use recommended…" options.
+4. **Viewer protocol policy**: Redirect HTTP to HTTPS.
+5. **Default root object**: `index.html`
+6. Leave alternate domain names (CNAMEs) and custom SSL certificate blank — you'll
+   get a working `*.cloudfront.net` URL. A custom domain can be added later.
+7. Click **Create distribution**.
+
 Docs: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
-The app is a SPA without routing, so custom error responses (404→index.html)
-are not needed.
+The app is a SPA without routing, so custom error responses (404→index.html) are not needed.
 
 ### 5.3 IAM: GitHub OIDC provider and the deploy role
 
@@ -154,16 +160,14 @@ Settings → Secrets and variables → Actions:
 - Secret `AWS_ROLE_ARN` = arn:aws:iam::<ACCOUNT_ID>:role/kb-tracker-deploy
 - Variable `AWS_REGION` = eu-central-1
 - Variable `S3_BUCKET` = kb-tracker-prod
-- Variable `CLOUDFRONT_DISTRIBUTION_ID` = <DIST_ID> (leave empty — the
-  invalidation step will be skipped)
+- Variable `CLOUDFRONT_DISTRIBUTION_ID` = <DIST_ID> (leave empty — the invalidation step will be skipped)
 
-Creating a `production` environment is recommended (Settings → Environments) —
-the workflow already references it; required reviewers can be enabled there.
+Creating a `production` environment is recommended (Settings → Environments) — the workflow already references it; required reviewers can be enabled there.
 
 ## 6. CI/CD: how the deploy works
 
-File: `.github/workflows/deploy.yml`. Push to main →
-checkout → Node 20 with npm cache → `npm ci` → `npm run build` →
+File: `.github/workflows/deploy.yml`. 
+Push to main → checkout → Node 20 with npm cache → `npm ci` → `npm run build` →
 OIDC auth to AWS → upload to S3 → CloudFront invalidation.
 
 Caching strategy (key to instant updates):
