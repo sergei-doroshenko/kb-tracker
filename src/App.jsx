@@ -687,7 +687,7 @@ function TimedUniExercise({ ex, exIdx, acts, setAct, tm, running, onStartSet, on
               <>
                 <input inputMode="numeric" placeholder="повт." value={a.v || ""}
                   onChange={(e) => setAct(key, "v", e.target.value.replace(/\D/g, ""))}
-                  className="w-16 rounded-lg px-2 py-2 text-sm text-center shrink-0" style={INP()} />
+                  className="w-14 min-w-0 rounded-lg px-1 py-2 text-sm text-center" style={INP()} />
                 <div className="w-8 text-center text-lg font-extrabold shrink-0" style={{ color: C.ok }}>✓</div>
               </>
             )}
@@ -726,10 +726,10 @@ function RepsUniExercise({ ex, exIdx, acts, setAct, onConfirm, onSkip, onStartRe
               <>
                 <input inputMode="numeric" placeholder="П" value={a.r || ""}
                   onChange={(e) => setAct(key, "r", e.target.value.replace(/\D/g, ""))}
-                  className="w-12 rounded-lg px-1 py-2 text-sm text-center shrink-0" style={INP()} />
+                  className="w-11 min-w-0 rounded-lg px-1 py-2 text-sm text-center" style={INP()} />
                 <input inputMode="numeric" placeholder="Л" value={a.l || ""}
                   onChange={(e) => setAct(key, "l", e.target.value.replace(/\D/g, ""))}
-                  className="w-12 rounded-lg px-1 py-2 text-sm text-center shrink-0" style={INP()} />
+                  className="w-11 min-w-0 rounded-lg px-1 py-2 text-sm text-center" style={INP()} />
                 <SkipBtn onClick={() => onSkip(key)} />
                 <ConfirmBtn onClick={confirm} />
               </>
@@ -738,10 +738,10 @@ function RepsUniExercise({ ex, exIdx, acts, setAct, onConfirm, onSkip, onStartRe
               <>
                 <input inputMode="numeric" placeholder="П" value={a.r || ""}
                   onChange={(e) => setAct(key, "r", e.target.value.replace(/\D/g, ""))}
-                  className="w-12 rounded-lg px-1 py-2 text-sm text-center shrink-0" style={INP()} />
+                  className="w-11 min-w-0 rounded-lg px-1 py-2 text-sm text-center" style={INP()} />
                 <input inputMode="numeric" placeholder="Л" value={a.l || ""}
                   onChange={(e) => setAct(key, "l", e.target.value.replace(/\D/g, ""))}
-                  className="w-12 rounded-lg px-1 py-2 text-sm text-center shrink-0" style={INP()} />
+                  className="w-11 min-w-0 rounded-lg px-1 py-2 text-sm text-center" style={INP()} />
                 <div className="w-6 text-center text-lg font-extrabold shrink-0" style={{ color: C.ok }}>✓</div>
               </>
             )}
@@ -782,7 +782,7 @@ function RepsBiExercise({ ex, exIdx, acts, setAct, onConfirm, onSkip, onStartRes
                 <input inputMode={freeText ? "text" : "numeric"}
                   placeholder={freeText ? "напр. 6×80" : "факт"} value={a.v || ""}
                   onChange={(e) => setAct(key, "v", freeText ? e.target.value : e.target.value.replace(/\D/g, ""))}
-                  className="w-24 rounded-lg px-2 py-2 text-sm text-center shrink-0" style={INP()} />
+                  className="w-20 min-w-0 rounded-lg px-1 py-2 text-sm text-center" style={INP()} />
                 <SkipBtn onClick={() => onSkip(key)} />
                 <ConfirmBtn onClick={confirm} />
               </>
@@ -792,7 +792,7 @@ function RepsBiExercise({ ex, exIdx, acts, setAct, onConfirm, onSkip, onStartRes
                 <input inputMode={freeText ? "text" : "numeric"}
                   placeholder={freeText ? "напр. 6×80" : "факт"} value={a.v || ""}
                   onChange={(e) => setAct(key, "v", freeText ? e.target.value : e.target.value.replace(/\D/g, ""))}
-                  className="w-24 rounded-lg px-2 py-2 text-sm text-center shrink-0" style={INP()} />
+                  className="w-20 min-w-0 rounded-lg px-1 py-2 text-sm text-center" style={INP()} />
                 <div className="w-6 text-center text-lg font-extrabold shrink-0" style={{ color: C.ok }}>✓</div>
               </>
             )}
@@ -971,7 +971,7 @@ function Today({ week, log, onSave }) {
       }
       const vals = sets.map((s, j) => (acts[`${i}-${j}`] || {}).v).filter(Boolean);
       return { n: ex.n, kg: ex.kg, uni: false, val: vals.join(" / ") };
-    }).filter((ex) => ex.r || ex.l || ex.val);
+    });
     const entry = {
       id: Date.now(),
       date: new Date(startTs || Date.now()).toISOString().slice(0, 10),
@@ -1125,7 +1125,15 @@ function Today({ week, log, onSave }) {
             <div className="flex gap-2">
               <button onClick={finish} className="flex-1 py-4 rounded-2xl font-extrabold"
                 style={{ background: C.ok, color: C.text }}>
-                Сохранить в журнал
+                Сохранить
+              </button>
+              <button onClick={() => {
+                setStartTs(null); setFinishing(false); setActs({}); setTm(null); setRunning(false);
+                setFeel(0); setNote(""); setPre({ well: 0, sleep: 0, energy: 0 }); setWu({}); setCd({});
+              }}
+                className="flex-1 py-4 rounded-2xl font-extrabold"
+                style={{ background: C.surface2, color: C.stop, border: `1px solid ${C.line}` }}>
+                Не сохранять
               </button>
               <button onClick={() => setFinishing(false)} className="px-4 py-4 rounded-2xl font-bold"
                 style={{ background: C.surface2, color: C.muted }}>
@@ -1390,6 +1398,25 @@ function Journal({ week, log, onSave, loaded }) {
   };
   const remove = (id) => onSave(log.filter((e) => e.id !== id));
 
+  const [editId, setEditId] = useState(null);
+  const [editData, setEditData] = useState(null);
+  const startEdit = (entry) => {
+    setEditId(entry.id);
+    setEditData(JSON.parse(JSON.stringify(entry)));
+  };
+  const saveEdit = () => {
+    onSave(log.map((e) => (e.id === editId ? editData : e)));
+    setEditId(null); setEditData(null);
+  };
+  const cancelEdit = () => { setEditId(null); setEditData(null); };
+  const setEditEx = (i, field, val) => {
+    setEditData((d) => {
+      const exs = [...d.exercises];
+      exs[i] = { ...exs[i], [field]: val };
+      return { ...d, exercises: exs };
+    });
+  };
+
   const inp = { background: C.surface2, color: C.text, border: `1px solid ${C.line}` };
 
   return (
@@ -1440,19 +1467,19 @@ function Journal({ week, log, onSave, loaded }) {
         )}
 
         {plan.map((ex, i) => (
-          <div key={`${week}-${d}-${i}`} className="rounded-xl p-3 mb-2" style={{ background: C.surface2, border: `1px solid ${C.line}` }}>
+          <div key={`${week}-${d}-${i}`} className="rounded-xl p-3 mb-2 overflow-hidden" style={{ background: C.surface2, border: `1px solid ${C.line}` }}>
             <div className="flex items-center justify-between mb-2">
               <div className="text-sm font-semibold">{ex.n}</div>
               {ex.kg && <KgBadge kg={ex.kg} />}
             </div>
             {ex.uni ? (
-              <div className="flex gap-2">
+              <div className="flex gap-2 min-w-0">
                 <input inputMode="numeric" placeholder="Правая" value={rows[i]?.r || ""}
                   onChange={(e) => setRow(i, "r", e.target.value.replace(/\D/g, ""))}
-                  className="flex-1 rounded-lg px-3 py-2 text-sm" style={{ ...inp, background: C.bg }} />
+                  className="flex-1 min-w-0 rounded-lg px-3 py-2 text-sm" style={{ ...inp, background: C.bg }} />
                 <input inputMode="numeric" placeholder="Левая" value={rows[i]?.l || ""}
                   onChange={(e) => setRow(i, "l", e.target.value.replace(/\D/g, ""))}
-                  className="flex-1 rounded-lg px-3 py-2 text-sm" style={{ ...inp, background: C.bg }} />
+                  className="flex-1 min-w-0 rounded-lg px-3 py-2 text-sm" style={{ ...inp, background: C.bg }} />
               </div>
             ) : (
               <input placeholder="Например: 4×6, 80 кг" value={rows[i]?.val || ""}
@@ -1518,7 +1545,7 @@ function Journal({ week, log, onSave, loaded }) {
       )}
 
       {log.map((e) => (
-        <div key={e.id} className="rounded-2xl p-4 mb-3" style={{ background: C.surface, border: `1px solid ${C.line}` }}>
+        <div key={e.id} className="rounded-2xl p-4 mb-3" style={{ background: C.surface, border: `1px solid ${editId === e.id ? C.kg20 : C.line}` }}>
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm font-bold" style={{ fontVariantNumeric: "tabular-nums" }}>
               {e.date}{e.dow !== undefined ? ` · ${DOW[e.dow]}` : ""}{e.week ? ` · нед. ${e.week}` : ""}
@@ -1535,6 +1562,9 @@ function Journal({ week, log, onSave, loaded }) {
                   {e.pain}/10
                 </span>
               ) : null}
+              {editId !== e.id && (
+                <button onClick={() => startEdit(e)} className="text-xs px-2 py-1 rounded-lg" style={{ color: C.muted, border: `1px solid ${C.line}` }}>✎</button>
+              )}
               <button onClick={() => remove(e.id)} className="text-xs px-2 py-1 rounded-lg" style={{ color: C.muted, border: `1px solid ${C.line}` }}>×</button>
             </div>
           </div>
@@ -1551,40 +1581,77 @@ function Journal({ week, log, onSave, loaded }) {
             </div>
           )}
 
-          {/* New format: per exercise */}
-          {e.exercises && e.exercises.map((ex, i) => {
-            const r = Number(ex.r) || 0, l = Number(ex.l) || 0;
-            const max = Math.max(r, l, 1);
-            return (
-              <div key={i} className="mb-2">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm">{ex.n}{ex.kg ? ` · ${ex.kg} кг` : ""}</div>
-                  <div className="text-sm font-bold" style={{ fontVariantNumeric: "tabular-nums" }}>
-                    {ex.uni ? `П ${r} · Л ${l}` : ex.val}
-                  </div>
+          {editId === e.id && editData ? (
+            <>
+              {editData.exercises && editData.exercises.map((ex, i) => (
+                <div key={i} className="rounded-xl p-2 mb-2 overflow-hidden" style={{ background: C.surface2, border: `1px solid ${C.line}` }}>
+                  <div className="text-sm mb-1">{ex.n}{ex.kg ? ` · ${ex.kg} кг` : ""}</div>
+                  {ex.uni ? (
+                    <div className="flex gap-2 min-w-0">
+                      <input inputMode="numeric" placeholder="П" value={ex.r || ""}
+                        onChange={(ev) => setEditEx(i, "r", ev.target.value.replace(/\D/g, ""))}
+                        className="flex-1 min-w-0 rounded-lg px-2 py-2 text-sm" style={{ background: C.bg, color: C.text, border: `1px solid ${C.line}` }} />
+                      <input inputMode="numeric" placeholder="Л" value={ex.l || ""}
+                        onChange={(ev) => setEditEx(i, "l", ev.target.value.replace(/\D/g, ""))}
+                        className="flex-1 min-w-0 rounded-lg px-2 py-2 text-sm" style={{ background: C.bg, color: C.text, border: `1px solid ${C.line}` }} />
+                    </div>
+                  ) : (
+                    <input placeholder="Значение" value={ex.val || ""}
+                      onChange={(ev) => setEditEx(i, "val", ev.target.value)}
+                      className="w-full rounded-lg px-2 py-2 text-sm" style={{ background: C.bg, color: C.text, border: `1px solid ${C.line}` }} />
+                  )}
                 </div>
-                {ex.uni && (r > 0 || l > 0) && (
-                  <div className="flex gap-1 mt-1">
-                    <div className="flex-1 h-1 rounded-full" style={{ background: C.surface2 }}>
-                      <div className="h-1 rounded-full" style={{ width: `${(r / max) * 100}%`, background: C.kg16 }} />
-                    </div>
-                    <div className="flex-1 h-1 rounded-full" style={{ background: C.surface2 }}>
-                      <div className="h-1 rounded-full" style={{ width: `${(l / max) * 100}%`, background: C.kg20 }} />
-                    </div>
-                  </div>
-                )}
+              ))}
+              <input placeholder="Заметка" value={editData.note || ""}
+                onChange={(ev) => setEditData((d) => ({ ...d, note: ev.target.value }))}
+                className="w-full rounded-lg px-2 py-2 text-sm mb-2" style={{ background: C.bg, color: C.text, border: `1px solid ${C.line}` }} />
+              <div className="flex gap-2">
+                <button onClick={saveEdit} className="flex-1 py-2 rounded-xl text-sm font-bold"
+                  style={{ background: C.ok, color: C.text }}>
+                  Сохранить
+                </button>
+                <button onClick={cancelEdit} className="flex-1 py-2 rounded-xl text-sm font-bold"
+                  style={{ background: C.surface2, color: C.muted }}>
+                  Отмена
+                </button>
               </div>
-            );
-          })}
+            </>
+          ) : (
+            <>
+              {e.exercises && e.exercises.filter((ex) => ex.r || ex.l || ex.val).map((ex, i) => {
+                const r = Number(ex.r) || 0, l = Number(ex.l) || 0;
+                const max = Math.max(r, l, 1);
+                return (
+                  <div key={i} className="mb-2">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm">{ex.n}{ex.kg ? ` · ${ex.kg} кг` : ""}</div>
+                      <div className="text-sm font-bold" style={{ fontVariantNumeric: "tabular-nums" }}>
+                        {ex.uni ? `П ${r} · Л ${l}` : ex.val}
+                      </div>
+                    </div>
+                    {ex.uni && (r > 0 || l > 0) && (
+                      <div className="flex gap-1 mt-1">
+                        <div className="flex-1 h-1 rounded-full" style={{ background: C.surface2 }}>
+                          <div className="h-1 rounded-full" style={{ width: `${(r / max) * 100}%`, background: C.kg16 }} />
+                        </div>
+                        <div className="flex-1 h-1 rounded-full" style={{ background: C.surface2 }}>
+                          <div className="h-1 rounded-full" style={{ width: `${(l / max) * 100}%`, background: C.kg20 }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
 
-          {/* Legacy single-entry format */}
-          {!e.exercises && (
-            <div className="text-sm" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {e.kg ? `${e.kg} кг · ` : ""}П {e.repsR} · Л {e.repsL}
-            </div>
+              {!e.exercises && (
+                <div className="text-sm" style={{ fontVariantNumeric: "tabular-nums" }}>
+                  {e.kg ? `${e.kg} кг · ` : ""}П {e.repsR} · Л {e.repsL}
+                </div>
+              )}
+
+              {e.note && <div className="text-sm mt-2" style={{ color: C.muted }}>{e.note}</div>}
+            </>
           )}
-
-          {e.note && <div className="text-sm mt-2" style={{ color: C.muted }}>{e.note}</div>}
         </div>
       ))}
     </div>
